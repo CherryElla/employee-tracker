@@ -44,28 +44,38 @@ class DB {
         return await this.query("SELECT * from `department`;");
     }
 
-    async getEmployees() {
-        let q = `SELECT
-        a.first_name,
-        a.last_name,
-        role.title,
-        role.salary,
-        department.name AS department,
-        IFNULL (CONCAT (b.last_name, ', ', b.first_name), 'None') AS 'manager'
-    FROM
-        employee a `;
-        q += "LEFT JOIN employee b ON a.manager_id = b.id ";
+    async getEmployees(allColumns = false) {
+        let q = "";
+        if (allColumns) {
+            q += "SELECT * FROM employee a ";
+        } else {
+            q += `SELECT
+                a.first_name,
+                a.last_name,
+                role.title,
+                role.salary,
+                department.name AS department,
+                IFNULL (CONCAT (b.last_name, ', ', b.first_name), 'None') AS 'manager'
+            FROM
+                employee a `;
+            q += "LEFT JOIN employee b ON a.manager_id = b.id ";
+        }
         q += "JOIN `role` ON a.role_id = role.id ";
         q += "JOIN `department` ON role.department_id = department.id;";
         return await this.query(q);
     }
 
-    async getRoles() {
-        let q = `SELECT 
-        title,
-        salary,
-        department.name AS department
-        FROM role JOIN department ON role.department_id = department.id`;
+    async getRoles(allCols=false) {
+        let q = ""
+        if (allCols) {
+            q += `SELECT * FROM role;`
+        } else {
+            q += `SELECT 
+            title,
+            salary,
+            department.name AS department
+            FROM role JOIN department ON role.department_id = department.id`;
+        }
         return await this.query(q);
     }
 
@@ -106,12 +116,11 @@ class DB {
         return await this.query(q);
     }
 
-    async addEmployee(firstName, lastName, title, roleId, managerId) {
-        let q = `INSERT INTO employee (first_name, last_name, title, role_id, manager_id)
+    async addEmployee(firstName, lastName, roleId, managerId) {
+        let q = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
         VALUES (
             "${firstName}",
             "${lastName}",
-            "${title}",
             ${roleId},
             ${managerId}
         )`;

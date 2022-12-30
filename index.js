@@ -7,6 +7,8 @@ const {
     ADD_DEPARTMENT,
     makeAddRoleFlow,
     makeAddEmployeeFlow,
+    makeUpdateEmployeeFlow,
+    makeSelectEmployeeFlow,
 } = require("./src/inquire_flows");
 
 // let response = await inquirer.prompt(ADD_EMPLOYEE)
@@ -24,24 +26,53 @@ async function addRole(db) {
 }
 
 async function addEmployee(db) {
-    let employees = await db.getEmployees()
-    let roles = await db.getRoles()
-    let flow = makeAddEmployeeFlow(roles, employees)
-    let response = await inquirer.prompt(flow)
-    console.log(response)
+    let employees = await db.getEmployees(true);
+    let roles = await db.getRoles(true);
+    let flow = makeAddEmployeeFlow(roles, employees);
+    let response = await inquirer.prompt(flow);
     await db.addEmployee(
         response.first_name,
         response.last_name,
-        response.title,
         response.role_id,
         response.manager_id
-    )
+    );
+}
+
+async function updateEmployee(db) {
+    let employees = await db.getEmployees(true);
+    let roles = await db.getRoles(true);
+    let flow = makeSelectEmployeeFlow(employees);
+    let response = await inquirer.prompt(flow);
+    let employee = response.employee;
+    console.log(employee);
+    flow = makeUpdateEmployeeFlow(employee.first_name, roles);
+    response = await inquirer.prompt(flow);
+    let role = response.role;
+    console.log(role);
+    // await db.updateEmployee(employee.id, role.id)
+}
+
+function printWelcome() {
+    console.log(
+        `
+        ╔═╗┬ ┬┌─┐┬─┐┬┌─┐┌─┐     
+        ║  ├─┤├┤ ├┬┘│├┤ └─┐     
+        ╚═╝┴ ┴└─┘┴└─┴└─┘└─┘     
+        ╔═╗┌┬┐┌─┐┬  ┌─┐┬ ┬┌─┐┌─┐
+        ║╣ │││├─┘│  │ │└┬┘├┤ ├┤ 
+        ╚═╝┴ ┴┴  ┴─┘└─┘ ┴ └─┘└─┘
+        ╔╦╗┌─┐┌┐┌┌─┐┌─┐┌─┐┬─┐   
+        ║║║├─┤│││├─┤│ ┬├┤ ├┬┘   
+        ╩ ╩┴ ┴┘└┘┴ ┴└─┘└─┘┴└─                                 
+    `);
 }
 
 async function main() {
+    printWelcome();
     let db = new DB();
     db.connect();
-    while (true) {
+    quit = false;
+    while (!quit) {
         let response = await inquirer.prompt(MAIN_MENU);
         let action = actionForSelection(response.selection);
         switch (action) {
@@ -61,17 +92,21 @@ async function main() {
                 await addDepartment(db);
                 break;
             case "addRole":
-                await addRole(db)
+                await addRole(db);
                 break;
             case "addEmployee":
-                await addEmployee(db)
+                await addEmployee(db);
                 break;
             case "updateEmployee":
+                await updateEmployee(db);
                 break;
             case "exit":
-                return;
+                quit = true;
+                break;
         }
     }
+    console.log("GOODBYE");
+    process.exit();
 }
 
 main();

@@ -51,34 +51,66 @@ function makeAddRoleFlow(departments) {
             type: "list",
             message: "Select department",
             choices: departments.map((d) => {
-                let newD = { ...d };
-                newD.value = newD.id;
-                return newD;
+                return {
+                    value: d.id,
+                    ...d,
+                };
             }),
             name: "department_id",
         },
     ];
 }
 
+function makeSelectEmployeeFlow(employees) {
+    let e = employees.map((emp) => {
+        let newE = {
+            name: `${emp.first_name} ${emp.last_name}`,
+            value: { ...emp },
+        };
+        return newE;
+    });
+    return [
+        {
+            type: "list",
+            message: "Select an employee",
+            choices: e,
+            name: "employee",
+        },
+    ];
+}
+
 function makeUpdateEmployeeFlow(firstName, roles) {
+    let r = roles.map((role) => {
+        return {
+            name: role.title,
+            value: { ...role },
+        };
+    });
     return [
         {
             type: "list",
             message: `Select a new role for ${firstName}`,
-            choices: roles,
-            name: "newRole",
+            choices: r,
+            name: "role",
         },
     ];
 }
 
 function makeAddEmployeeFlow(roles, managers) {
     let m = managers.map((m) => {
-        let newM = { ...m };
-        newM.name = `${newM.first_name} ${newM.last_name}`;
-        newM.value = newM.id;
-        return newM;
+        return {
+            name: `${m.first_name} ${m.last_name}`,
+            value: m.id,
+        };
     });
     m.push({ name: "None", value: null });
+    let r = roles.map((r) => {
+        return {
+            name: r.title,
+            value: r.id,
+        };
+    });
+    console.log(r)
     return [
         {
             type: "input",
@@ -93,12 +125,7 @@ function makeAddEmployeeFlow(roles, managers) {
         {
             type: "list",
             message: "What is the employee's role?",
-            choices: roles.map((r) => {
-                let newR = { ...r };
-                newR.name = newR.title;
-                newR.value = newR.id;
-                return newR;
-            }),
+            choices: r,
             name: "role_id",
         },
         {
@@ -116,5 +143,6 @@ module.exports = {
     makeAddEmployeeFlow,
     makeAddRoleFlow,
     makeUpdateEmployeeFlow,
+    makeSelectEmployeeFlow,
     actionForSelection,
 };
