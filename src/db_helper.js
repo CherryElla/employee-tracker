@@ -102,7 +102,7 @@ class DB {
     }
 
     async addRole(title, salary, departmentId) {
-        let q = `INSERT INTO role (title, salary, departmentId)
+        let q = `INSERT INTO role (title, salary, department_id)
         VALUES (
             "${title}",
             ${salary},
