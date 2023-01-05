@@ -44,12 +44,10 @@ async function updateEmployee(db) {
     let flow = makeSelectEmployeeFlow(employees);
     let response = await inquirer.prompt(flow);
     let employee = response.employee;
-    console.log(employee);
     flow = makeUpdateEmployeeFlow(employee.first_name, roles);
     response = await inquirer.prompt(flow);
     let role = response.role;
-    console.log(role);
-    // await db.updateEmployee(employee.id, role.id)
+    await db.updateEmployee(employee.id, role.id)
 }
 
 function printWelcome() {

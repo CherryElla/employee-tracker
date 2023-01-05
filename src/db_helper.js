@@ -47,7 +47,7 @@ class DB {
     async getEmployees(allColumns = false) {
         let q = "";
         if (allColumns) {
-            q += "SELECT * FROM employee a ";
+            q += "SELECT * FROM employee;";
         } else {
             q += `SELECT
                 a.first_name,
@@ -59,9 +59,9 @@ class DB {
             FROM
                 employee a `;
             q += "LEFT JOIN employee b ON a.manager_id = b.id ";
+            q += "JOIN `role` ON a.role_id = role.id ";
+            q += "JOIN `department` ON role.department_id = department.id;";
         }
-        q += "JOIN `role` ON a.role_id = role.id ";
-        q += "JOIN `department` ON role.department_id = department.id;";
         return await this.query(q);
     }
 

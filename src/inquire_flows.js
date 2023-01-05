@@ -63,11 +63,10 @@ function makeAddRoleFlow(departments) {
 
 function makeSelectEmployeeFlow(employees) {
     let e = employees.map((emp) => {
-        let newE = {
+        return {
             name: `${emp.first_name} ${emp.last_name}`,
             value: { ...emp },
         };
-        return newE;
     });
     return [
         {
@@ -110,7 +109,6 @@ function makeAddEmployeeFlow(roles, managers) {
             value: r.id,
         };
     });
-    console.log(r)
     return [
         {
             type: "input",
